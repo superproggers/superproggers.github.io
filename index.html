@@ -1,0 +1,120 @@
+<?php 
+    if (!empty($_COOKIE['sid'])) {session_id($_COOKIE['sid']);}
+    session_start();
+    require_once 'classes/Auth.class.php';
+    require_once 'stayt.php';
+?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Главаная страница</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+
+<h1>Главаная страница</h1>
+<p class="zag">Оригинал скрипта предоставлен <a href="https://age-dragon.com/scripts/15-registraciya.html" target="_blank">Age-Dragon.com</a></p>
+
+
+<!-- Для авторизованных -->
+<?php if (Auth\User::isAuthorized()): ?>
+<p class="privet">Привет, <?php echo "<span class='name'>".$arr['names']."</span>!";?></p>
+
+<!-- Для НЕ авторизованных -->
+<?php else: ?>
+<p class="privet">Привет, <span class='name'>Гость</span>!</p>
+
+<!-- Конец условия -->
+<?php endif; ?>
+
+
+<div class="my_cont"><div class="row">
+
+<div class="col-lg-4 col-md-4"><div class="my_left"><div class="my_left-2"><!-- Левая колонка -->
+
+<!-- Для авторизованных -->
+<?php if (Auth\User::isAuthorized()): ?>
+<p class="ogl">Профиль</p>
+<div class="dannye">
+<p class="bolden">Ваши данные:</p>
+<p class="nik stef">Имя: <span class='name'><?php echo $arr['names'];?></span></p>
+<p class="nik stef">E-mail: <span class='name'><?php echo $arr['username'];?></span></p>
+<p class="nik stef">IP: <span class='name'><?php echo $arr['ips'];?></span></p>
+<p class="nik stef">Регистрация: <span class='name'><?php echo $arr['vremya'];?></span></p>
+</div>
+<form novalidate="novalidate" class="form-signin-2 ajax" method="post" action="ajax.php">
+<input type="hidden" name="act" value="logout">
+<input type="submit" class="vyxod" value="Выйти" />
+</form>
+
+<!-- Для НЕ авторизованных -->
+<?php else: ?>
+<form class="form-signin ajax" method="post" action="ajax.php">
+<p class="ogl">Авторизация</p>
+<div class="main-error alert alert-error hide"></div>
+<span class="testex">Введите E-mail</span><br />
+<input name="username" type="text" class="input-block-level"><br />
+<span class="testex">Введите пароль</span><br />
+<input name="password" type="password" class="input-block-level"><br />
+<input type="checkbox" name="remember-me" style="display:none" checked>
+<input type="hidden" name="act" value="login">
+<input type="submit" class="button"  value="Войти">
+</form>
+<p><a href="registr.html">Регистрация</a></p>
+
+<!-- Конец условия -->
+<?php endif; ?>
+
+<p class="ogl">Статистика</p>
+<div class="dannye">
+<?php 
+require_once "stayt.php";
+if ($mabe = $mysqli->query("SELECT `ID` FROM `users`")) {
+    $row_cnt = $mabe->num_rows;
+    echo "<p class='nik stef'>Регистраций: <span class='name'>".$row_cnt."</span></p>";
+    $mabe->close();
+}
+if ($mabe2 = $mysqli->query("SELECT `names` FROM `users` ORDER BY id DESC LIMIT 1")) {
+    $rows = $mabe2->fetch_array();
+    $id = $rows[0];
+    echo "<p class='nik stef'>Последний: <span class='name'>".$id."</span></p>";
+    $mabe2->close();
+}
+?>
+</div>
+
+</div></div></div><!-- Конец Левая колонка -->
+
+
+<div class="col-lg-8 col-md-8"><div class="my_cent"><div class="my_cent-2"><!-- Центральная колонка -->
+
+<p class="ogl">Информация для всех посетителей</p>
+<div class="bord"><p>Информация для всех пользователей</p><p>Некий текст некий текст некий текст некий текст некий текст некий текст</p></div>
+<p class="ogl">Информация для ЗАРЕГИСТРИРОВАННЫХ</p>
+
+<div class="bord">
+<!-- Для авторизованных -->
+<?php if (Auth\User::isAuthorized()): ?>
+<p><span class="green">Открытая информация для тех, кто зарегистрирован</span></p>
+<p><span class="gray">Здесь размещаете всё что угодно:</span> текст, фото, видео, скрипты, продажные материалы и так далее.</p>
+
+<!-- Для НЕ авторизованных -->
+<?php else: ?>
+<p class="spec">ДОСТУП ЗАКРЫТ</p><p class="ogl valet">Необходимо авторизоваться, либо зарегистрироваться!</p>
+<!-- Конец условия -->
+<?php endif; ?>
+</div>
+
+</div></div></div><!-- Конец Центральная колонка -->
+
+
+</div></div>
+
+
+
+<script src="jquery-2.0.3.min.js"></script><script src="ajax-form.js"></script>
+</body>
+</html>
